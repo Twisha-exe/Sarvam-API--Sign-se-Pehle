@@ -1,0 +1,18 @@
+Sign Se Pehle (साइन से पहले) is a voice-first tool that helps people understand a rental agreement before they sign it.
+
+The problem: Most people sign rental agreements they can’t fully read, often written in dense legal English or a mix of languages. They miss things like lock-in penalties, deposit forfeiture, and one-sided notice rules.
+
+What it does:
+
+You upload a photo or PDF of the agreement.
+Sarvam Vision reads the text, even from a messy photo.
+Sarvam-105B finds the riskiest clauses, marks each red, amber, or green, and shows the exact line from the contract.
+It explains each clause in plain words in your language (Hindi, Telugu, Tamil, and more).
+Bulbul reads the explanation aloud.
+You can ask “What if I leave after 4 months?” and it answers from your own contract.
+
+Why it matters: It helps first-time tenants, students, and migrants who can’t read legal text, and it works in Indian languages, so it’s accessible to people who aren’t comfortable in English.
+
+Limit: It’s not legal advice. It points out clauses worth questioning.
+
+One-line pitch: “Photograph your rental agreement, see the risky clauses with the exact line, and hear them explained in your own language before you sign.”
