@@ -1,0 +1,30 @@
+The app is a single Python notebook (Google Colab) that uses the sarvamai SDK and Gradio for the interface. It has six parts:
+
+Setup. The API key is read from Colab Secrets, so it never appears in the code or on GitHub. A SarvamAI client is created once and reused for every call.
+Reading the document (extract_text). The uploaded photo or PDF is sent to Sarvam’s Document AI (powered by Sarvam Vision) as a job. Because the job runs in the background, the code polls its status every few seconds until it finishes, then downloads a ZIP file and reads the markdown text out of it.
+Finding the risky clauses (analyse). The extracted text goes to Sarvam-105B with a strict prompt that asks for JSON only. Each clause has a type (lock-in, deposit, rent hike and so on), the exact source line copied from the contract, a plain-language explanation in the chosen language, and a risk colour. The “exact source line” rule keeps the model from inventing clauses, and the user can check every claim against the original.
+Cleaning the model’s reply. Models sometimes wrap JSON in code fences or add stray text. The code removes <think> blocks and code fences, then cuts everything outside the outermost { ... } before parsing.
+Speaking the explanation (speak). The chosen explanation is sent to Bulbul with the language code that matches the user’s selection (for example te-IN for Telugu). It passes the language through instead of hardcoding Hindi, a mistake I noticed in the example repo. The audio is saved to a unique temporary file so two requests can’t overwrite each other.
+The “what if” question (what_if). The user’s question and the extracted clauses go to the model with the rule “answer only from these clauses and quote the clause you used; if the contract doesn’t say, say so”. This keeps answers grounded in the user’s own document.
+
+The Gradio interface ties these together: a language dropdown, a file upload, a paste box for testing without Vision, clause cards, a Listen button, and a question box. A “not legal advice” notice stays at the top.
+
+The credits error
+
+What happened: When the app ran, the analysis step failed. The API returned HTTP status 402 with the message “No credits available” and the code insufficient_quota_error.
+
+What it means: This isn’t a bug in the code. The request was well formed and reached Sarvam’s servers, and the server refused it because the account attached to the API key had no usable credits. A 402 status means “payment required”.
+
+How it was found: At first, the page only said “Couldn’t read the clauses”, because the code caught the error and hid the reason. I changed analyse so that it prints the real error and the model’s raw output, and shows them on the page. That change made the 402 visible immediately. Adding this kind of error reporting is useful on its own, because without it a billing problem looks like a model failure.
+
+How to resolve it:
+
+Check the credit balance and key on dashboard.sarvam.ai, and confirm the key belongs to the account that holds the credits.
+Ask the hackathon organisers for event credits or a promo code, then redeem it and create a fresh key if needed.
+Put the new key in Colab Secrets and restart the session.
+
+What it affects: Every call that uses Sarvam’s models needs credits, so Vision, 105B, and Bulbul are all blocked until it’s fixed. Nothing else in the project depends on it, so the GitHub repo, the README, and the pitch can be prepared in the meantime.
+
+If you want to describe this in your submission
+
+You can say honestly that the pipeline is built end to end, that the testing was blocked by an account-credit limit (HTTP 402, not a code fault), and that the app now reports API errors clearly instead of hiding them. Don’t claim a working demo until you’ve seen one run. Once credits arrive, run the demo once, save a screenshot and the audio clip, and add them to the README as proof.
